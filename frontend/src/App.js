@@ -8,19 +8,6 @@ import NotificationsPage from "./Pages/NotificationManagement/NotificationsPage"
 import AddNewPost from "./Pages/PostManagement/AddNewPost";
 import AllPost from "./Pages/PostManagement/AllPost";
 import UpdatePost from "./Pages/PostManagement/UpdatePost";
-import AddQuest from "./Pages/QuizManagement/AddQuest";
-import AllQuest from "./Pages/QuizManagement/AllQuest";
-import UpdateQuest from "./Pages/QuizManagement/UpdateQuest";
-import AttemptQuest from "./Pages/QuizManagement/AttemptQuest";
-import MyQuest from "./Pages/QuizManagement/MyQuest";
-import AllCommunity from "./Pages/CommunityManagement/AllCommunity";
-import AddNoties from "./Pages/CommunityManagement/AddNoties";
-import AllNoties from "./Pages/CommunityManagement/AllNoties";
-import CreateCommunity from "./Pages/CommunityManagement/CreateCommunity";
-import CommunityDetails from "./Pages/CommunityManagement/CommunityDetails";
-import AllUserForCommunity from "./Pages/CommunityManagement/AllUserForCommunity";
-import UpdateNoties from "./Pages/CommunityManagement/UpdateNoties";
-import MyCommunity from "./Pages/CommunityManagement/MyCommunity";
 
 function ProtectedRoute({ children }) {
   const userID = localStorage.getItem("userID");

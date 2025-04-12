@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import SideBar from '../../Components/SideBar/SideBar';
+import SideBar from '../../Components/NavBar/NavBar';
 function UpdatePost() {
   const { id } = useParams(); // Get the post ID from the URL
   const navigate = useNavigate();

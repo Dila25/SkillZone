@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import SideBar from '../../Components/SideBar/SideBar';
-import { IoMdAdd } from "react-icons/io";
+import SideBar from '../../Components/NavBar/NavBar';
 function UpdateUserProfile() {
   const { id } = useParams();
   const [formData, setFormData] = useState({

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import SideBar from '../../Components/SideBar/SideBar';
+import SideBar from '../../Components/NavBar/NavBar';
 import './notification.css'
 import { RiDeleteBin6Fill } from "react-icons/ri";
 function NotificationsPage() {

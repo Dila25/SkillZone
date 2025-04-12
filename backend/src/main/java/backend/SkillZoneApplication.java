@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class TraverseHubApplication {
+public class SkillZoneApplication {
 
     @Bean(name = "applicationCorsConfigurer") // Renamed bean
     public WebMvcConfigurer corsConfigurer() {

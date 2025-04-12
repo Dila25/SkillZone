@@ -5,7 +5,7 @@ import { IoSend } from "react-icons/io5";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { BiSolidLike } from "react-icons/bi";
-import SideBar from '../../Components/SideBar/SideBar';
+import SideBar from '../../Components/NavBar/NavBar';
 import Modal from 'react-modal'; 
 import './post.css'
 Modal.setAppElement('#root'); 

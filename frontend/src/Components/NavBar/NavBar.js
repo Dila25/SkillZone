@@ -5,7 +5,6 @@ import { MdNotificationsActive } from "react-icons/md";
 import { IoLogOut } from "react-icons/io5";
 import axios from 'axios';
 import './NavBar.css';
-import './UserCard.css'; // Import CSS for the card
 
 function NavBar() {
     const [allRead, setAllRead] = useState(true);
