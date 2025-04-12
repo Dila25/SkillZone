@@ -24,7 +24,7 @@ function UserLogin() {
         const data = await response.json();
         localStorage.setItem('userID', data.id); 
         alert('Login successful!');
-        navigate('/learningSystem/allLearningPost'); 
+        navigate('/allPost'); 
       } else if (response.status === 401) {
         alert('Invalid credentials!'); 
       } else {

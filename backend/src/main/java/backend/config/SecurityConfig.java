@@ -26,10 +26,6 @@ public class SecurityConfig {
                                 "/posts/**",
                                 "/media/**",
                                 "/notifications/**",
-                                "/quizzes/**",
-                                "/attempts/**",
-                                "/communities/**",
-                                "/notices/**",
                                 "/comments/**"
 
                         ).permitAll()
