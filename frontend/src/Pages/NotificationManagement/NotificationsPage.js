@@ -51,7 +51,7 @@ function NotificationsPage() {
           <h2 className="notifications-title">Notifications</h2>
           {notifications.length === 0 ? (
             <div className='not_found_box'>
-              <IoMdNotificationsOff className='not_found_img' size={48} />
+              <IoMdNotificationsOff className='not_found_img_nn' size={48} />
               <p className='not_found_msg'>No notifications found.</p>
             </div>
           ) : (

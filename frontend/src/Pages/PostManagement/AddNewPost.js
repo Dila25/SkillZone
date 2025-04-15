@@ -75,7 +75,7 @@ function AddNewPost() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       alert('Post created successfully!');
-      window.location.reload();
+      window.location.href='/allPost';
     } catch (error) {
       console.error(error);
       alert('Failed to create post.');

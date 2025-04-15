@@ -70,7 +70,12 @@ function UserRegister() {
                                         name="fullname"
                                         placeholder="Full Name"
                                         value={formData.fullname}
-                                        onChange={handleInputChange}
+                                        onChange={(e) => {
+                                            const re = /^[A-Za-z\s]*$/;
+                                            if (re.test(e.target.value)) {
+                                                handleInputChange(e);
+                                            }
+                                          }}
                                         required
                                     />
                                 </div>
