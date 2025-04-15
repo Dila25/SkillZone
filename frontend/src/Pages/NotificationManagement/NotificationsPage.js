@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import SideBar from '../../Components/NavBar/NavBar';
-import './notification.css'
 import { RiDeleteBin6Fill } from "react-icons/ri";
+import { IoMdNotificationsOff } from "react-icons/io";
+import { MdMarkEmailRead } from "react-icons/md";
+import './notification.css';
+
 function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
   const userId = localStorage.getItem('userID');
@@ -11,7 +14,6 @@ function NotificationsPage() {
     const fetchNotifications = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/notifications/${userId}`);
-        console.log('API Response:', response.data); // Debugging log
         setNotifications(response.data);
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -20,15 +22,13 @@ function NotificationsPage() {
 
     if (userId) {
       fetchNotifications();
-    } else {
-      console.error('User ID is not available');
     }
   }, [userId]);
 
   const handleMarkAsRead = async (id) => {
     try {
       await axios.put(`http://localhost:8080/notifications/${id}/markAsRead`);
-      setNotifications(notifications.map((n) => (n.id === id ? { ...n, read: true } : n)));
+      setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n));
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
@@ -37,46 +37,54 @@ function NotificationsPage() {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`http://localhost:8080/notifications/${id}`);
-      setNotifications(notifications.filter((n) => n.id !== id));
+      setNotifications(notifications.filter(n => n.id !== id));
     } catch (error) {
       console.error('Error deleting notification:', error);
     }
   };
 
   return (
-    <div>
+    <div className="notification-page">
+      <SideBar />
       <div className='continer'>
-        <div><SideBar /></div>
         <div className='continSection'>
-          <div className='post_card_continer'>
-            {notifications.length === 0 ? (
-              <div className='not_found_box'>
-                <div className='not_found_img'></div>
-                <p className='not_found_msg'>No notifications found.</p>
-              </div>
-            ) : (
-              notifications.map((notification) => (
-                <div key={notification.id} className='post_card'>
-                  <div className='continer_set'>
-                    <p className='noty_topic'>{notification.message}</p>
-                    <p className='noty_time'>{notification.createdAt}</p>
+          <h2 className="notifications-title">Notifications</h2>
+          {notifications.length === 0 ? (
+            <div className='not_found_box'>
+              <IoMdNotificationsOff className='not_found_img' size={48} />
+              <p className='not_found_msg'>No notifications found.</p>
+            </div>
+          ) : (
+            <div className="notifications-list">
+              {notifications.map(notification => (
+                <div 
+                  key={notification.id} 
+                  className={`notification-card ${notification.read ? 'read' : 'unread'}`}
+                >
+                  <div className="notification-content">
+                    <p className="notification-message">{notification.message}</p>
+                    <p className="notification-time">{new Date(notification.createdAt).toLocaleString()}</p>
                   </div>
-                  <div className='noty_action_btn_con'>
-                    <button
-                      className='mark_redbtn'
-                      onClick={() => handleMarkAsRead(notification.id)}
-                      style={{ display: notification.read ? 'none' : 'inline-block' }}
-                    >
-                      Mark as Read
-                    </button>
-                    <RiDeleteBin6Fill
+                  <div className="notification-actions">
+                    {!notification.read && (
+                      <button 
+                        className="mark-read-btn"
+                        onClick={() => handleMarkAsRead(notification.id)}
+                      >
+                        <MdMarkEmailRead /> Mark as Read
+                      </button>
+                    )}
+                    <button 
+                      className="delete-btn"
                       onClick={() => handleDelete(notification.id)}
-                      className='action_btn_icon' />
+                    >
+                      <RiDeleteBin6Fill /> Delete
+                    </button>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

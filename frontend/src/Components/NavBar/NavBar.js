@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { FaUserGraduate } from "react-icons/fa";
+import { FaUserCircle } from "react-icons/fa";
 import { MdNotifications } from "react-icons/md";
 import { MdNotificationsActive } from "react-icons/md";
-import { IoLogOut } from "react-icons/io5";
 import axios from 'axios';
 import './NavBar.css';
 
 function NavBar() {
     const [allRead, setAllRead] = useState(true);
-    const [showCard, setShowCard] = useState(false); 
-    const [userData, setUserData] = useState(null); 
     const userId = localStorage.getItem('userID');
 
     useEffect(() => {
@@ -23,18 +20,8 @@ function NavBar() {
             }
         };
 
-        const fetchUserData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/user/${userId}`);
-                setUserData(response.data);
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
         if (userId) {
             fetchNotifications();
-            fetchUserData(); // Fetch user data on component mount
         }
     }, [userId]);
 
@@ -42,55 +29,28 @@ function NavBar() {
 
     return (
         <div className="navbar">
-            <div className='nav_item_set'>
-                <div className='side_logoo'></div>
-                <div className='nav_bar_item'>
-                    {allRead ? (
-                        <MdNotifications
-                            className={`nav_item_icon ${currentPath === '/notifications' ? 'nav_item_icon_noty' : ''}`}
-                            onClick={() => (window.location.href = '/notifications')} />
-                    ) : (
-                        <MdNotificationsActive className='nav_item_icon_noty' onClick={() => (window.location.href = '/notifications')} />
-                    )}
-                    <IoLogOut
-                        className='nav_item_icon'
-                        onClick={() => {
-                            localStorage.removeItem('userID');
-                            localStorage.removeItem('userType');
-                            window.location.href = '/';
-                        }}
-                    />
-                    <FaUserGraduate
-                        className='nav_item_icon'
-                        style={{ display: localStorage.getItem('userType') === 'googale' ? 'none' : 'block' }}
-                        onClick={() => setShowCard(!showCard)} 
-                    />
+            <div className='nav_con'>
+                <div className='nav_item_set'>
+                    <div className='side_logoo'></div>
+                    <div className='nav_bar_item'>
+                        <p className={`nav_item ${currentPath === '/allPost' ? 'nav_item_active' : ''}`} onClick={() => (window.location.href = '/allPost')}>Post</p>
+                        <p className={`nav_item ${currentPath === '/learningProgress' ? 'nav_item_active' : ''}`} onClick={() => (window.location.href = '/learningProgress')}>Learning Progress</p>
+                        {allRead ? (
+                            <MdNotifications
+                                className={`nav_item_icon ${currentPath === '/notifications' ? 'nav_item_icon_noty' : ''}`}
+                                onClick={() => (window.location.href = '/notifications')} />
+                        ) : (
+                            <MdNotificationsActive className='nav_item_icon_noty' onClick={() => (window.location.href = '/notifications')} />
+                        )}
+                       
+                        <FaUserCircle
+                            className={`nav_item_icon ${currentPath === '/userProfile' ? 'nav_item_icon_noty' : ''}`}
+                            onClick={() => (window.location.href = "/userProfile")}
+                        />
+
+                    </div>
                 </div>
             </div>
-            {showCard && userData && (
-                <div className="user-card">
-                    <p><strong>Full Name:</strong> {userData.fullname}</p>
-                    <p><strong>Email:</strong> {userData.email}</p>
-                    <p><strong>Phone:</strong> {userData.phone}</p>
-                    <p><strong>Bio:</strong> {userData.bio}</p>
-                    <button onClick={() => (window.location.href = `/updateUserProfile/${userId}`)}>Update Profile</button>
-                    <button
-                        onClick={() => {
-                            if (window.confirm('Are you sure you want to delete your profile?')) {
-                                axios.delete(`http://localhost:8080/user/${userId}`)
-                                    .then(() => {
-                                        alert('Profile deleted successfully!');
-                                        localStorage.removeItem('userID');
-                                        window.location.href = '/';
-                                    })
-                                    .catch(error => console.error('Error deleting profile:', error));
-                            }
-                        }}
-                    >
-                        Delete Profile
-                    </button>
-                </div>
-            )}
         </div>
     );
 }

@@ -13,20 +13,20 @@ function UserLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login attempt:', formData); 
+    console.log('Login attempt:', formData);
     try {
       const response = await fetch('http://localhost:8080/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData), 
+        body: JSON.stringify(formData),
       });
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('userID', data.id); 
+        localStorage.setItem('userID', data.id);
         alert('Login successful!');
-        navigate('/allPost'); 
+        navigate('/allPost');
       } else if (response.status === 401) {
-        alert('Invalid credentials!'); 
+        alert('Invalid credentials!');
       } else {
         alert('Failed to login!');
       }
@@ -39,14 +39,17 @@ function UserLogin() {
     <div className="Auth_container">
       <div className="Auth_innerContainer">
         <div className="Auth_content">
-          <div className="Auth_content_img"></div>
+          <div className="Auth_content_img">
+            <div className="Auth_content_img_reg">
+              <p className='auth_lft_pera'>Welcome back to <br>
+              </br>SkillZone</p>
+              <div className='auth_pr_line'></div>
+              <p className='auth_per_sub_name'>Sign in to continue your account</p>
+            </div>
+          </div>
         </div>
         <div className="Auth_content new_content">
-          <div className="Auth_logo"></div>
-          <div className='login_content'>
-            <p className="Auth_heading">Let the journey begin!</p>
-            <p className="Auth_subheading">Unlock a world of education with a single click! Please login in to your account.</p>
-          </div>
+
           <form onSubmit={handleSubmit} className="Auth_form">
             <div className="Auth_formGroup">
               <label className="Auth_label">Email Address</label>
@@ -74,7 +77,7 @@ function UserLogin() {
             </div>
             <button type="submit" className="Auth_button">Login</button>
             <p className="Auth_signupPrompt">
-              Don’t have an account? <span onClick={() => (window.location.href = '/register')} className="Auth_signupLink">Sign up for free</span>
+              Don’t have an account? <span onClick={() => (window.location.href = '/register')} className="Auth_signupLink">Sign up</span>
             </p>
           </form>
           <button

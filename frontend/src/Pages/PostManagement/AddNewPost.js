@@ -85,60 +85,63 @@ function AddNewPost() {
 
   return (
     <div>
+      <SideBar />
       <div className='continer'>
-        <div>   <SideBar /></div>
         <div className='continSection'>
           <div className="from_continer">
             <p className="Auth_heading">Create New Post</p>
-            <form onSubmit={handleSubmit} className='from_data'>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Title</label>
-                <input
-                  className="Auth_input"
-                  type="text"
-                  placeholder="Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Description</label>
-                <textarea
-                  className="Auth_input"
-                  placeholder="Description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                  rows={3}
-                />
-              </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Media</label>
-                <div className='seket_media'>
-                  {mediaPreviews.map((preview, index) => (
-                    <div key={index}>
-                      {preview.type.startsWith('video/') ? (
-                        <video controls className='media_file_se'>
-                          <source src={preview.url} type={preview.type} />
-                          Your browser does not support the video tag.
-                        </video>
-                      ) : (
-                        <img className='media_file_se' src={preview.url} alt={`Media Preview ${index}`} />
-                      )}
-                    </div>
-                  ))}
+            <div className='flx_con'>
+              <form onSubmit={handleSubmit} className='from_data flx_con_section'>
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Title</label>
+                  <input
+                    className="Auth_input"
+                    type="text"
+                    placeholder="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                  />
                 </div>
-                <input
-                  className="Auth_input"
-                  type="file"
-                  accept="image/jpeg,image/png,image/jpg,video/mp4"
-                  multiple
-                  onChange={handleMediaChange}
-                />
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Description</label>
+                  <textarea
+                    className="Auth_input"
+                    placeholder="Description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                    rows={3}
+                  />
+                </div>
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Media</label>
+
+                  <input
+                    className="Auth_input"
+                    type="file"
+                    accept="image/jpeg,image/png,image/jpg,video/mp4"
+                    multiple
+                    onChange={handleMediaChange}
+                  />
+                </div>
+                <button type="submit" className="Auth_button">Submit</button>
+              </form>
+              <div className='seket_media flx_con_section'>
+                {mediaPreviews.map((preview, index) => (
+                  <div key={index}>
+                    {preview.type.startsWith('video/') ? (
+                      <video controls className='media_file_se'>
+                        <source src={preview.url} type={preview.type} />
+                        Your browser does not support the video tag.
+                      </video>
+                    ) : (
+                      <img className='media_file_se' src={preview.url} alt={`Media Preview ${index}`} />
+                    )}
+                  </div>
+                ))}
               </div>
-              <button type="submit" className="Auth_button">Submit</button>
-            </form>
+            </div>
           </div>
         </div>
       </div>

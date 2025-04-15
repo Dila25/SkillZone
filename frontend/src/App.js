@@ -8,6 +8,8 @@ import NotificationsPage from "./Pages/NotificationManagement/NotificationsPage"
 import AddNewPost from "./Pages/PostManagement/AddNewPost";
 import AllPost from "./Pages/PostManagement/AllPost";
 import UpdatePost from "./Pages/PostManagement/UpdatePost";
+import UserProfile from "./Pages/UserManagement/UserProfile";
+import MyPost from "./Pages/PostManagement/MyPost";
 
 function ProtectedRoute({ children }) {
   const userID = localStorage.getItem("userID");
@@ -29,8 +31,8 @@ function App() {
       if (userID && name) {
         localStorage.setItem("userID", userID);
         alert(`Login successful! Welcome, ${name}`);
-        localStorage.setItem("userType", "googale");
-        navigate("/learningSystem/allLearningPost");
+        localStorage.setItem("userType", "google");
+        navigate("/allPost");
       } else {
         alert("Login failed. Missing user information.");
       }
@@ -54,6 +56,14 @@ function App() {
             }
           />
           <Route
+            path="/userProfile"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/notifications"
             element={
               <ProtectedRoute>
@@ -66,6 +76,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <AddNewPost />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-posts"
+            element={
+              <ProtectedRoute>
+                <MyPost />
               </ProtectedRoute>
             }
           />

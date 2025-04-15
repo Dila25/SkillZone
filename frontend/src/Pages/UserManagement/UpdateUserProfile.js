@@ -52,8 +52,9 @@ function UpdateUserProfile() {
 
   return (
     <div>
+              <div><SideBar /></div>
       <div className='continer'>
-        <div><SideBar /></div>
+
         <div className='continSection'>
           <div className="from_continer">
             <p className="Auth_heading">Update User Profile</p>

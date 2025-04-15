@@ -2,19 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { IoSend } from "react-icons/io5";
-import { FaEdit } from "react-icons/fa";
-import { RiDeleteBin6Fill } from "react-icons/ri";
+import { RiEdit2Fill } from "react-icons/ri";
+import { MdDelete } from "react-icons/md";
 import { BiSolidLike } from "react-icons/bi";
 import SideBar from '../../Components/NavBar/NavBar';
-import Modal from 'react-modal'; 
+import Modal from 'react-modal';
+import { MdCreate } from "react-icons/md";
 import './post.css'
-Modal.setAppElement('#root'); 
+Modal.setAppElement('#root');
 
 function AllPost() {
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]); // For filtering posts
   const [postOwners, setPostOwners] = useState({}); // Map of userID to fullName
-  const [showMyPosts, setShowMyPosts] = useState(false); // Toggle for "My Posts"
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [followedUsers, setFollowedUsers] = useState([]); // State to track followed users
@@ -28,8 +28,12 @@ function AllPost() {
     const fetchPosts = async () => {
       try {
         const response = await axios.get('http://localhost:8080/posts');
-        setPosts(response.data);
-        setFilteredPosts(response.data); // Initially show all posts
+        const postsWithShowAllComments = response.data.map((post) => ({
+          ...post,
+          showAllComments: false, // Initialize showAllComments property
+        }));
+        setPosts(postsWithShowAllComments);
+        setFilteredPosts(postsWithShowAllComments); // Initially show all posts
 
         // Fetch post owners' names
         const userIDs = [...new Set(response.data.map((post) => post.userID))]; // Get unique userIDs
@@ -96,16 +100,6 @@ function AllPost() {
     navigate(`/updatePost/${postId}`); // Navigate to the UpdatePost page with the post ID
   };
 
-  const handleMyPostsToggle = () => {
-    if (showMyPosts) {
-      // Show all posts
-      setFilteredPosts(posts);
-    } else {
-      // Filter posts by logged-in user ID
-      setFilteredPosts(posts.filter((post) => post.userID === loggedInUserID));
-    }
-    setShowMyPosts(!showMyPosts); // Toggle the state
-  };
 
   const handleLike = async (postId) => {
     const userID = localStorage.getItem('userID');
@@ -273,21 +267,12 @@ function AllPost() {
 
   return (
     <div>
+      <SideBar />
       <div className='continer'>
-        <div><SideBar /></div>
         <div className='continSection'>
-          <button
-            className='actionButton_add'
-            onClick={() => (window.location.href = '/addNewPost')}
-          >
-            create post
-          </button>
-          <button
-            className='action_btn_my'
-            onClick={handleMyPostsToggle}
-          >
-            {showMyPosts ? 'All Posts' : 'My Posts'}
-          </button>
+          <div className='create_btn' onClick={() => (window.location.href = '/addNewPost')}>
+            <MdCreate />
+          </div>
           <div className='post_card_continer'>
             {filteredPosts.length === 0 ? (
               <div className='not_found_box'>
@@ -298,155 +283,173 @@ function AllPost() {
             ) : (
               filteredPosts.map((post) => (
                 <div key={post.id} className='post_card'>
-                  <div className='user_details_card'>
-                    <div className='name_section_post'>
-                      <p className='name_section_post_owner_name'>{postOwners[post.userID] || 'Anonymous'}</p>
-                      {post.userID !== loggedInUserID && (
-                        <button
-                          className={followedUsers.includes(post.userID) ? 'flow_btn_unfalow' : 'flow_btn'}
-                          onClick={() => handleFollowToggle(post.userID)}
-                        >
-                          {followedUsers.includes(post.userID) ? 'Unfollow' : 'Follow'}
-                        </button>
-                      )}
-                    </div>
-                    {post.userID === loggedInUserID && (
-                      <div>
-                        <div className='action_btn_icon_post'>
-                          <FaEdit
-                            onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
-                          <RiDeleteBin6Fill
-                            onClick={() => handleDelete(post.id)}
-                            className='action_btn_icon' />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className='user_details_card_di'>
-                    <p className='card_post_title'>{post.title}</p>
-                    <p className='card_post_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
-                  </div>
-                  <div className="media-collage">
-                    {post.media.slice(0, 4).map((mediaUrl, index) => (
-                      <div
-                        key={index}
-                        className={`media-item ${post.media.length > 4 && index === 3 ? 'media-overlay' : ''}`}
-                        onClick={() => openModal(mediaUrl)}
-                      >
-                        {mediaUrl.endsWith('.mp4') ? (
-                          <video controls>
-                            <source src={`http://localhost:8080${mediaUrl}`} type="video/mp4" />
-                            Your browser does not support the video tag.
-                          </video>
-                        ) : (
-                          <img src={`http://localhost:8080${mediaUrl}`} alt="Post Media" />
-                        )}
-                        {post.media.length > 4 && index === 3 && (
-                          <div className="overlay-text">+{post.media.length - 4}</div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  <div className='like_coment_lne'>
-                    <div className='like_btn_con'>
-                      <BiSolidLike
-                        className={post.likes?.[localStorage.getItem('userID')] ? 'unlikebtn' : 'likebtn'}
-                        onClick={() => handleLike(post.id)}
-                      >
-                        {post.likes?.[localStorage.getItem('userID')] ? 'Unlike' : 'Like'}
-                      </BiSolidLike>
-                      <p className='like_num'>
-                        {Object.values(post.likes || {}).filter((liked) => liked).length}
-                      </p>
-                    </div>
-                    <div className='add_comennt_con'>
-                      <input
-                        type="text"
-                        className='add_coment_input'
-                        placeholder="Add a comment"
-                        value={newComment[post.id] || ''}
-                        onChange={(e) =>
-                          setNewComment({ ...newComment, [post.id]: e.target.value })
-                        }
-                      />
-                      <IoSend
-                        onClick={() => handleAddComment(post.id)}
-                        className='add_coment_btn'
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    {post.comments?.map((comment) => (
-                      <div key={comment.id} className='coment_full_card'>
-                        <div className='comnt_card'>
-                          <p className='comnt_card_username'>{comment.userFullName}</p>
-                          {editingComment.id === comment.id ? (
-                            <input
-                              type="text"
-                              className='edit_comment_input'
-                              value={editingComment.content}
-                              onChange={(e) =>
-                                setEditingComment({ ...editingComment, content: e.target.value })
-                              }
-                              autoFocus
-                            />
-                          ) : (
-                            <p className='comnt_card_coment'>{comment.content}</p>
-                          )}
-                        </div>
-
-                        <div className='coment_action_btn'>
-                          {comment.userID === loggedInUserID && (
-                            <>
-                              {editingComment.id === comment.id ? (
-                                <>
-                                  <button
-                                    className='coment_btn'
-                                    onClick={() =>
-                                      handleSaveComment(post.id, comment.id, editingComment.content)
-                                    }
-                                  >
-                                    Save
-                                  </button>
-                                  <button
-                                    className='coment_btn'
-                                    onClick={() => setEditingComment({})}
-                                  >
-                                    Cancel
-                                  </button>
-                                </>
-                              ) : (
-                                <>
-                                  <button
-                                    className='coment_btn'
-                                    onClick={() =>
-                                      setEditingComment({ id: comment.id, content: comment.content })
-                                    }
-                                  >
-                                    Update
-                                  </button>
-                                  <button
-                                    className='coment_btn'
-                                    onClick={() => handleDeleteComment(post.id, comment.id)}
-                                  >
-                                    Delete
-                                  </button>
-                                </>
-                              )}
-                            </>
-                          )}
-                          {post.userID === loggedInUserID && comment.userID !== loggedInUserID && (
+                  <div className='post_con_new'>
+                    <div className='post_con_section post_con_section_new'>
+                      <div className='user_details_card'>
+                        <div className='name_section_post'>
+                          <p className='name_section_post_owner_name'>{postOwners[post.userID] || 'Anonymous'}</p>
+                          {post.userID !== loggedInUserID && (
                             <button
-                              className='coment_btn'
-                              onClick={() => handleDeleteComment(post.id, comment.id)}
+                              className={followedUsers.includes(post.userID) ? 'flow_btn_unfalow' : 'flow_btn'}
+                              onClick={() => handleFollowToggle(post.userID)}
                             >
-                              Delete
+                              {followedUsers.includes(post.userID) ? 'Unfollow' : 'Follow'}
                             </button>
                           )}
                         </div>
+                        {post.userID === loggedInUserID && (
+                          <div>
+                            <div className='action_btn_icon_post'>
+                              <RiEdit2Fill 
+                                onClick={() => handleUpdate(post.id)} className='action_btn_icon' />
+                              <MdDelete
+                                onClick={() => handleDelete(post.id)}
+                                className='action_btn_icon' />
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    ))}
-
+                      <div className='user_details_card_di'>
+                        <p className='card_post_title'>{post.title}</p>
+                        <p className='card_post_description' style={{ whiteSpace: "pre-line" }}>{post.description}</p>
+                      </div>
+                      <div className="media-collage">
+                        {post.media.slice(0, 4).map((mediaUrl, index) => (
+                          <div
+                            key={index}
+                            className={`media-item ${post.media.length > 4 && index === 3 ? 'media-overlay' : ''}`}
+                            onClick={() => openModal(mediaUrl)}
+                          >
+                            {mediaUrl.endsWith('.mp4') ? (
+                              <video controls>
+                                <source src={`http://localhost:8080${mediaUrl}`} type="video/mp4" />
+                                Your browser does not support the video tag.
+                              </video>
+                            ) : (
+                              <img src={`http://localhost:8080${mediaUrl}`} alt="Post Media" />
+                            )}
+                            {post.media.length > 4 && index === 3 && (
+                              <div className="overlay-text">+{post.media.length - 4}</div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      <div className='like_coment_lne'>
+                        <div className='like_btn_con'>
+                          <BiSolidLike
+                            className={post.likes?.[localStorage.getItem('userID')] ? 'unlikebtn' : 'likebtn'}
+                            onClick={() => handleLike(post.id)}
+                          >
+                            {post.likes?.[localStorage.getItem('userID')] ? 'Unlike' : 'Like'}
+                          </BiSolidLike>
+                          <p className='like_num'>
+                            {Object.values(post.likes || {}).filter((liked) => liked).length}
+                          </p>
+                        </div>
+                        <div className='add_comennt_con'>
+                          <input
+                            type="text"
+                            className='add_coment_input'
+                            placeholder="Add a comment"
+                            value={newComment[post.id] || ''}
+                            onChange={(e) =>
+                              setNewComment({ ...newComment, [post.id]: e.target.value })
+                            }
+                          />
+                          <IoSend
+                            onClick={() => handleAddComment(post.id)}
+                            className='add_coment_btn'
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className='post_con_section'>
+                      <div className='coment_card_section'>
+                        {post.comments?.slice(0, post.showAllComments ? post.comments.length : 5).map((comment) => (
+                          <div key={comment.id} className='coment_full_card'>
+                            <div className='comnt_card'>
+                              <p className='comnt_card_username'>{comment.userFullName}</p>
+                              {editingComment.id === comment.id ? (
+                                <input
+                                  type="text"
+                                  className='edit_comment_input'
+                                  value={editingComment.content}
+                                  onChange={(e) =>
+                                    setEditingComment({ ...editingComment, content: e.target.value })
+                                  }
+                                  autoFocus
+                                />
+                              ) : (
+                                <p className='comnt_card_coment'>{comment.content}</p>
+                              )}
+                            </div>
+                            <div className='coment_action_btn'>
+                              {comment.userID === loggedInUserID && (
+                                <>
+                                  {editingComment.id === comment.id ? (
+                                    <>
+                                      <button
+                                        className='coment_btn'
+                                        onClick={() =>
+                                          handleSaveComment(post.id, comment.id, editingComment.content)
+                                        }
+                                      >
+                                        Save
+                                      </button>
+                                      <button
+                                        className='coment_btn'
+                                        onClick={() => setEditingComment({})}
+                                      >
+                                        Cancel
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <button
+                                        className='coment_btn'
+                                        onClick={() =>
+                                          setEditingComment({ id: comment.id, content: comment.content })
+                                        }
+                                      >
+                                        Update
+                                      </button>
+                                      <button
+                                        className='coment_btn'
+                                        onClick={() => handleDeleteComment(post.id, comment.id)}
+                                      >
+                                        Delete
+                                      </button>
+                                    </>
+                                  )}
+                                </>
+                              )}
+                              {post.userID === loggedInUserID && comment.userID !== loggedInUserID && (
+                                <button
+                                  className='coment_btn'
+                                  onClick={() => handleDeleteComment(post.id, comment.id)}
+                                >
+                                  Delete
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        {post.comments?.length > 5 && !post.showAllComments && (
+                          <button
+                            className='show_all_comments_btn'
+                            onClick={() => {
+                              const updatedPosts = posts.map((p) =>
+                                p.id === post.id ? { ...p, showAllComments: true } : p
+                              );
+                              setPosts(updatedPosts);
+                              setFilteredPosts(updatedPosts);
+                            }}
+                          >
+                            Show All Comments
+                          </button>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))
@@ -455,7 +458,6 @@ function AllPost() {
         </div>
       </div>
 
-      {/* Modal for displaying full media */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
