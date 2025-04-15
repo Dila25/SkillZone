@@ -25,6 +25,7 @@ public class SecurityConfig {
                                 "/user/**",
                                 "/posts/**",
                                 "/media/**",
+                                "/learningProgress/**",
                                 "/notifications/**",
                                 "/comments/**"
 

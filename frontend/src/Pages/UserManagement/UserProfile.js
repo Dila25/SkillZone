@@ -40,7 +40,7 @@ function UserProfile() {
             title: "My Progress",
             icon: <FaChartLine size={24} />,
             description: "Track your activity and growth",
-            path: "/progress",
+            path: "/myProgress",
             color: "#0a1a6b"
         }
     ];

@@ -52,6 +52,7 @@
   flex-direction: column;
   align-items: center;
   display: flex;
+  margin: 0 auto;
 }
 .flx_con_section{
   flex: 1;
@@ -455,6 +456,12 @@ textarea {
   justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
+}
+.progress-content{
+  width: 100%;
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }
 .media_file_se {
   width: 200px;
