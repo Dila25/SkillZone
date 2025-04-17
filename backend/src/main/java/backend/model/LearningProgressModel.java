@@ -17,6 +17,7 @@ public class LearningProgressModel {
     private String startDate;
     private String endDate;
     private String imagePath;
+    private String pdfPath;
 
     public LearningProgressModel() {
 
@@ -103,5 +104,13 @@ public class LearningProgressModel {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public String getPdfPath() {
+        return pdfPath;
+    }
+
+    public void setPdfPath(String pdfPath) {
+        this.pdfPath = pdfPath;
     }
 }

@@ -97,10 +97,23 @@ function AllLearningProgress() {
                               />
                             )}
                           </div>
+                          {progress.pdfPath && (
+                            <div className="progress-pdf">
+                              <a
+                                href={`http://localhost:8080/learningProgress/pdf/${progress.pdfPath}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="view-pdf-link"
+                              >
+                                View PDF
+                              </a>
+                            </div>
+                          )}
                           <div className="progress-meta">
                             <span className="field-badge">{progress.field}</span>
-
                           </div>
+                          
+                         
                         </div>
 
                         <div className="progress-dates">

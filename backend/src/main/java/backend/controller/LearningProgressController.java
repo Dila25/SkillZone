@@ -44,6 +44,7 @@ public class LearningProgressController {
 
     @PutMapping("/learningProgress/{id}")
     public LearningProgressModel update(@RequestParam(value = "image", required = false) MultipartFile image,
+                                        @RequestParam(value = "pdf", required = false) MultipartFile pdf,
                                         @RequestPart("data") LearningProgressModel newLearningProgressModel,
                                         @PathVariable String id) throws IOException {
         return learningProgressRepository.findById(id)
@@ -79,6 +80,28 @@ public class LearningProgressController {
                         }
                     }
 
+                    // Handle PDF update
+                    if (pdf != null && !pdf.isEmpty()) {
+                        try {
+                            // Delete old PDF if it exists
+                            if (learningProgressModel.getPdfPath() != null) {
+                                File oldPDF = new File(System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "PDF" + File.separator + learningProgressModel.getPdfPath());
+                                if (oldPDF.exists()) {
+                                    oldPDF.delete();
+                                }
+                            }
+
+                            // Save new PDF
+                            String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "PDF" + File.separator;
+                            String uniqueFileName = UUID.randomUUID().toString() + "_" + pdf.getOriginalFilename();
+                            File file = new File(uploadDir + uniqueFileName);
+                            pdf.transferTo(file);
+                            learningProgressModel.setPdfPath(uniqueFileName);
+                        } catch (IOException e) {
+                            throw new RuntimeException("Failed to update PDF", e);
+                        }
+                    }
+
                     return learningProgressRepository.save(learningProgressModel);
                 }).orElseThrow(() -> new LearningProgressNotFoundException(id));
     }
@@ -101,6 +124,19 @@ public class LearningProgressController {
         return uniqueFileName;
     }
 
+    @PostMapping("/learningProgress/uploadPDF")
+    public String uploadPDF(@RequestParam("pdf") MultipartFile pdf) throws IOException {
+        String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "PDF" + File.separator;
+        File directory = new File(uploadDir);
+        if (!directory.exists()) {
+            directory.mkdirs(); // Create the directory if it doesn't exist
+        }
+        String uniqueFileName = UUID.randomUUID().toString() + "_" + pdf.getOriginalFilename();
+        File file = new File(uploadDir + uniqueFileName);
+        pdf.transferTo(file); // Save the file
+        return uniqueFileName;
+    }
+
     @GetMapping("/learningProgress/image/{fileName}")
     public ResponseEntity<Resource> getImage(@PathVariable String fileName) {
         try {
@@ -109,6 +145,23 @@ public class LearningProgressController {
             if (resource.exists() || resource.isReadable()) {
                 HttpHeaders headers = new HttpHeaders();
                 headers.add(HttpHeaders.CONTENT_TYPE, "image/jpeg"); // Adjust content type as needed
+                return new ResponseEntity<>(resource, headers, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/learningProgress/pdf/{fileName}")
+    public ResponseEntity<Resource> getPDF(@PathVariable String fileName) {
+        try {
+            Path filePath = Paths.get(System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "PDF" + File.separator + fileName);
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_TYPE, "application/pdf"); // Set content type for PDF
                 return new ResponseEntity<>(resource, headers, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

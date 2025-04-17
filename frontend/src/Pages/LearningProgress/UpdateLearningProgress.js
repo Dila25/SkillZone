@@ -12,9 +12,11 @@ function UpdateLearningProgress() {
     endDate: '',
     postOwnerID: '',
     postOwnerName: '',
-    imagePath: ''
+    imagePath: '',
+    pdfPath: ''
   });
   const [image, setImage] = useState(null);
+  const [pdf, setPdf] = useState(null);
 
   useEffect(() => {
     fetch(`http://localhost:8080/learningProgress/${id}`)
@@ -34,6 +36,9 @@ function UpdateLearningProgress() {
     updateFormData.append('data', new Blob([JSON.stringify(formData)], { type: 'application/json' }));
     if (image) {
       updateFormData.append('image', image);
+    }
+    if (pdf) {
+      updateFormData.append('pdf', pdf);
     }
 
     try {
@@ -65,34 +70,35 @@ function UpdateLearningProgress() {
               }}
               className='from_data'
             >
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Title</label>
-                <input
-                  className="Auth_input"
-                  name="skillTitle"
-                  placeholder="Skill Title"
-                  value={formData.skillTitle}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Field</label>
-                <select
-                  className="Auth_input"
-                  name="field"
-                  value={formData.field}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>Select Field</option>
-                  <option value="Frontend Development">Frontend Development</option>
-                  <option value="Programming Language">Programming Language</option>
-                  <option value="Backend Development">Backend Development</option>
-                  <option value="UI/UX">UI/UX</option>
-                  <option value="Quality Assurance">Quality Assurance</option>
-                </select>
+              <div className='two_fels_row'>
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Title</label>
+                  <input
+                    className="Auth_input"
+                    name="skillTitle"
+                    placeholder="Skill Title"
+                    value={formData.skillTitle}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Field</label>
+                  <select
+                    className="Auth_input"
+                    name="field"
+                    value={formData.field}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="" disabled>Select Field</option>
+                    <option value="Frontend Development">Frontend Development</option>
+                    <option value="Programming Language">Programming Language</option>
+                    <option value="Backend Development">Backend Development</option>
+                    <option value="UI/UX">UI/UX</option>
+                    <option value="Quality Assurance">Quality Assurance</option>
+                  </select>
+                </div>
               </div>
               <div className='two_fels_row'>
                 <div className="Auth_formGroup">
@@ -125,6 +131,53 @@ function UpdateLearningProgress() {
                   />
                 </div>
               </div>
+              <div className='two_fels_row_media'>
+                {formData.pdfPath && (
+                  <div className="Auth_formGroup">
+                    <label className="Auth_label">Current PDF</label>
+                    <a
+                      href={`http://localhost:8080/learningProgress/pdf/${formData.pdfPath}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="progress-pdf-link"
+                    >
+                      View Current PDF
+                    </a>
+                  </div>
+                )}
+                {formData.imagePath && (
+                  <div className="Auth_formGroup">
+                    <label className="Auth_label">Current Image</label>
+                    <img
+                      src={`http://localhost:8080/learningProgress/image/${formData.imagePath}`}
+                      alt="Current Progress"
+                      className="progress-img"
+                    />
+                  </div>
+                )}
+              </div>
+              <div className='two_fels_row'>
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Upload New PDF</label>
+                  <input
+                    className="Auth_input"
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) => setPdf(e.target.files[0])}
+                  />
+                </div>
+
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Upload New Image</label>
+                  <input
+                    className="Auth_input"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setImage(e.target.files[0])}
+                  />
+                </div>
+              </div>
+
               <div className="Auth_formGroup">
                 <label className="Auth_label">Description</label>
                 <textarea
@@ -137,25 +190,6 @@ function UpdateLearningProgress() {
                   rows={4}
                 />
               </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Upload New Image</label>
-                <input
-                  className="Auth_input"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setImage(e.target.files[0])}
-                />
-              </div>
-              {formData.imagePath && (
-                <div className="Auth_formGroup">
-                  <label className="Auth_label">Current Image</label>
-                  <img
-                    src={`http://localhost:8080/learningProgress/image/${formData.imagePath}`}
-                    alt="Current Progress"
-                    className="progress-img"
-                  />
-                </div>
-              )}
               <button type="submit" className="Auth_button">Update</button>
             </form >
           </div >

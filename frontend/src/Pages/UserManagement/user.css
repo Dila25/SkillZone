@@ -165,6 +165,13 @@
   justify-content: center;
   gap: 10px;
 }
+.two_fels_row_media{
+  display: flex;
+  width: 100%;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 40px;
+}
 .Auth_input {
   width: 100%;
   padding: 10px;

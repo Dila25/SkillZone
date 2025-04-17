@@ -12,6 +12,7 @@ function AddLearningProgress() {
     postOwnerName: ''
   });
   const [image, setImage] = useState(null);
+  const [pdf, setPdf] = useState(null);
 
   useEffect(() => {
     const userId = localStorage.getItem('userID');
@@ -54,15 +55,37 @@ function AddLearningProgress() {
     }
   };
 
+  const handlePDFUpload = async () => {
+    if (!pdf) return null;
+    const formData = new FormData();
+    formData.append('pdf', pdf);
+    try {
+      const response = await fetch('http://localhost:8080/learningProgress/uploadPDF', {
+        method: 'POST',
+        body: formData,
+      });
+      if (response.ok) {
+        return await response.text();
+      } else {
+        alert('Failed to upload PDF.');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error uploading PDF:', error);
+      return null;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const imagePath = await handleImageUpload();
-    if (imagePath) {
+    const pdfPath = await handlePDFUpload();
+    if (imagePath || pdfPath) {
       try {
         const response = await fetch('http://localhost:8080/learningProgress', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...formData, imagePath }),
+          body: JSON.stringify({ ...formData, imagePath, pdfPath }),
         });
         if (response.ok) {
           alert('Learning Progress added successfully!');
@@ -99,34 +122,36 @@ function AddLearningProgress() {
               }}
               className='from_data'
             >
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Title</label>
-                <input
-                  className="Auth_input"
-                  name="skillTitle"
-                  placeholder="Skill Title"
-                  value={formData.skillTitle}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+              <div className='two_fels_row'>
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Title</label>
+                  <input
+                    className="Auth_input"
+                    name="skillTitle"
+                    placeholder="Skill Title"
+                    value={formData.skillTitle}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
 
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Field</label>
-                <select
-                  className="Auth_input"
-                  name="field"
-                  value={formData.field}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="" disabled>Select Field</option>
-                  <option value="Frontend Development">Frontend Development</option>
-                  <option value="Programming Language">Programming Language</option>
-                  <option value="Backend Development">Backend Development</option>
-                  <option value="UI/UX">UI/UX</option>
-                  <option value="Quality Assurance">Quality Assurance</option>
-                </select>
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Field</label>
+                  <select
+                    className="Auth_input"
+                    name="field"
+                    value={formData.field}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="" disabled>Select Field</option>
+                    <option value="Frontend Development">Frontend Development</option>
+                    <option value="Programming Language">Programming Language</option>
+                    <option value="Backend Development">Backend Development</option>
+                    <option value="UI/UX">UI/UX</option>
+                    <option value="Quality Assurance">Quality Assurance</option>
+                  </select>
+                </div>
               </div>
               <div className='two_fels_row'>
                 <div className="Auth_formGroup">
@@ -159,6 +184,26 @@ function AddLearningProgress() {
                   />
                 </div>
               </div>
+              <div className='two_fels_row'>
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Upload Image</label>
+                  <input
+                    className="Auth_input"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setImage(e.target.files[0])}
+                  />
+                </div>
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Upload PDF</label>
+                  <input
+                    className="Auth_input"
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) => setPdf(e.target.files[0])}
+                  />
+                </div>
+              </div>
               <div className="Auth_formGroup">
                 <label className="Auth_label">Description</label>
                 <textarea
@@ -171,15 +216,7 @@ function AddLearningProgress() {
                   rows={4}
                 />
               </div>
-              <div className="Auth_formGroup">
-                <label className="Auth_label">Upload Image</label>
-                <input
-                  className="Auth_input"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setImage(e.target.files[0])}
-                />
-              </div>
+
               <button type="submit" className="Auth_button">Add</button>
             </form >
           </div >
