@@ -16,6 +16,7 @@ public class LearningProgressModel {
     private String field;
     private String startDate;
     private String endDate;
+    private String imagePath;
 
     public LearningProgressModel() {
 
@@ -94,5 +95,13 @@ public class LearningProgressModel {
 
     public void setEndDate(String endDate) {
         this.endDate = endDate;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

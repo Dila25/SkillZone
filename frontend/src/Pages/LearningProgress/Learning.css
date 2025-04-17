@@ -22,11 +22,14 @@
   background: #071248;
   color: white;
 }
-
+.progress-img{
+  width: 100%;
+  border-radius: 8px;
+}
 /* Progress Cards */
 .progress-cards {
   width: 100%;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 25px;
   flex-wrap: wrap;

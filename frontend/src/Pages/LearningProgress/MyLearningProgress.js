@@ -89,11 +89,20 @@ function MyLearningProgress() {
 
                         <div className="progress-title">
                           <h3>{progress.skillTitle}</h3>
+                          <div className="progress-image">
+                            {progress.imagePath && (
+                              <img
+                                src={`http://localhost:8080/learningProgress/image/${progress.imagePath}`}
+                                alt="Progress"
+                                className="progress-img"
+                              />
+                            )}
+                          </div>
                           <div className="progress-meta">
                             <span className="field-badge">{progress.field}</span>
-                            
                           </div>
                         </div>
+
                         <div className="progress-dates">
                           <HiCalendarDateRange className="calendar-icon" />
                           <span>{progress.startDate} to {progress.endDate}</span>

@@ -11,6 +11,7 @@ function AddLearningProgress() {
     postOwnerID: '',
     postOwnerName: ''
   });
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     const userId = localStorage.getItem('userID');
@@ -32,22 +33,46 @@ function AddLearningProgress() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleImageUpload = async () => {
+    if (!image) return null;
+    const formData = new FormData();
+    formData.append('image', image);
     try {
-      const response = await fetch('http://localhost:8080/learningProgress', {
+      const response = await fetch('http://localhost:8080/learningProgress/uploadImage', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: formData,
       });
       if (response.ok) {
-        alert('Learning Progress added successfully!');
-        window.location.href = '/learningProgress';
+        return await response.text();
       } else {
-        alert('Failed to add Learning Progress.');
+        alert('Failed to upload image.');
+        return null;
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error uploading image:', error);
+      return null;
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const imagePath = await handleImageUpload();
+    if (imagePath) {
+      try {
+        const response = await fetch('http://localhost:8080/learningProgress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...formData, imagePath }),
+        });
+        if (response.ok) {
+          alert('Learning Progress added successfully!');
+          window.location.href = '/myProgress';
+        } else {
+          alert('Failed to add Learning Progress.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
   };
 
@@ -144,6 +169,15 @@ function AddLearningProgress() {
                   onChange={handleChange}
                   required
                   rows={4}
+                />
+              </div>
+              <div className="Auth_formGroup">
+                <label className="Auth_label">Upload Image</label>
+                <input
+                  className="Auth_input"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setImage(e.target.files[0])}
                 />
               </div>
               <button type="submit" className="Auth_button">Add</button>
