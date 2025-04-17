@@ -11,8 +11,10 @@ function UpdateLearningProgress() {
     startDate: '',
     endDate: '',
     postOwnerID: '',
-    postOwnerName: ''
+    postOwnerName: '',
+    imagePath: ''
   });
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     fetch(`http://localhost:8080/learningProgress/${id}`)
@@ -28,15 +30,20 @@ function UpdateLearningProgress() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const updateFormData = new FormData();
+    updateFormData.append('data', new Blob([JSON.stringify(formData)], { type: 'application/json' }));
+    if (image) {
+      updateFormData.append('image', image);
+    }
+
     try {
       const response = await fetch(`http://localhost:8080/learningProgress/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: updateFormData,
       });
       if (response.ok) {
         alert('Learning Progress updated successfully!');
-        window.location.href = '/allLearningProgress';
+        window.location.href = '/myProgress';
       } else {
         alert('Failed to update Learning Progress.');
       }
@@ -55,16 +62,6 @@ function UpdateLearningProgress() {
             <form
               onSubmit={(e) => {
                 handleSubmit(e);
-                setFormData({
-                  skillTitle: '',
-                  description: '',
-                  field: '',
-                  startDate: '',
-                  endDate: '',
-                  level: '',
-                  postOwnerID: formData.postOwnerID,
-                  postOwnerName: formData.postOwnerName,
-                });
               }}
               className='from_data'
             >
@@ -140,7 +137,25 @@ function UpdateLearningProgress() {
                   rows={4}
                 />
               </div>
-
+              <div className="Auth_formGroup">
+                <label className="Auth_label">Upload New Image</label>
+                <input
+                  className="Auth_input"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setImage(e.target.files[0])}
+                />
+              </div>
+              {formData.imagePath && (
+                <div className="Auth_formGroup">
+                  <label className="Auth_label">Current Image</label>
+                  <img
+                    src={`http://localhost:8080/learningProgress/image/${formData.imagePath}`}
+                    alt="Current Progress"
+                    className="progress-img"
+                  />
+                </div>
+              )}
               <button type="submit" className="Auth_button">Update</button>
             </form >
           </div >

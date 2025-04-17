@@ -43,9 +43,12 @@ public class LearningProgressController {
     }
 
     @PutMapping("/learningProgress/{id}")
-    LearningProgressModel update(@RequestBody LearningProgressModel newLearningProgressModel, @PathVariable String id) {
+    public LearningProgressModel update(@RequestParam(value = "image", required = false) MultipartFile image,
+                                        @RequestPart("data") LearningProgressModel newLearningProgressModel,
+                                        @PathVariable String id) throws IOException {
         return learningProgressRepository.findById(id)
                 .map(learningProgressModel -> {
+                    // Update fields
                     learningProgressModel.setSkillTitle(newLearningProgressModel.getSkillTitle());
                     learningProgressModel.setDescription(newLearningProgressModel.getDescription());
                     learningProgressModel.setPostOwnerID(newLearningProgressModel.getPostOwnerID());
@@ -53,6 +56,29 @@ public class LearningProgressController {
                     learningProgressModel.setField(newLearningProgressModel.getField());
                     learningProgressModel.setStartDate(newLearningProgressModel.getStartDate());
                     learningProgressModel.setEndDate(newLearningProgressModel.getEndDate());
+
+                    // Handle image update
+                    if (image != null && !image.isEmpty()) {
+                        try {
+                            // Delete old image if it exists
+                            if (learningProgressModel.getImagePath() != null) {
+                                File oldImage = new File(System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "Progress" + File.separator + learningProgressModel.getImagePath());
+                                if (oldImage.exists()) {
+                                    oldImage.delete();
+                                }
+                            }
+
+                            // Save new image
+                            String uploadDir = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "Progress" + File.separator;
+                            String uniqueFileName = UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+                            File file = new File(uploadDir + uniqueFileName);
+                            image.transferTo(file);
+                            learningProgressModel.setImagePath(uniqueFileName);
+                        } catch (IOException e) {
+                            throw new RuntimeException("Failed to update image", e);
+                        }
+                    }
+
                     return learningProgressRepository.save(learningProgressModel);
                 }).orElseThrow(() -> new LearningProgressNotFoundException(id));
     }
